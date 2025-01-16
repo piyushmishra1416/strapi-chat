@@ -13,7 +13,9 @@ export default {
   initialize({ strapi }) {
     const io = new Server(strapi.server.httpServer, {
       cors: {
-        origin: ['http://localhost:5173'],
+        origin: process.env.NODE_ENV === 'production' 
+          ? [process.env.FRONTEND_URL || 'https://your-frontend-domain.com']
+          : ['http://localhost:5173'],
         methods: ['GET', 'POST'],
         credentials: true,
       },
@@ -31,9 +33,10 @@ export default {
         // Verify JWT token
         const verified = jwt.verify(token, process.env.JWT_SECRET) as TokenPayload;
         
-        // Get user from database
+        // Get user from database with basic info
         const user = await strapi.db.query('plugin::users-permissions.user').findOne({
-          where: { id: verified.id }
+          where: { id: verified.id },
+          select: ['id', 'username', 'email'],
         });
 
         if (!user) {
@@ -76,8 +79,8 @@ export default {
             content: msg,
             sender: {
               id: socket.user.id,
-              username: socket.user.username === 'Server' ? 'Server' : socket.user.username,
-              isBot: socket.user.username === 'Server'
+              username: socket.user.username,
+              isBot: false
             },
             timestamp: message.createdAt,
             isDelivered: true
