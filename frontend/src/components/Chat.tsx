@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, TextField, Button, Typography, Avatar } from '@mui/material';
+import { Box, TextField, Button, Typography, Avatar, IconButton } from '@mui/material';
 import { io, Socket } from 'socket.io-client';
 import { format } from 'date-fns';
 // import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
 import SendIcon from '@mui/icons-material/Send';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../contexts/AuthContext';
 import { SOCKET_URL } from '../config';
 
@@ -21,7 +22,7 @@ interface Message {
 }
 
 export function Chat() {
-  const { userId } = useAuth();
+  const { userId, logout } = useAuth();
   const [socket, setSocket] = useState<Socket | null>(null);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -119,6 +120,13 @@ export function Chat() {
     );
   };
 
+  const handleLogout = () => {
+    if (socket) {
+      socket.close();
+    }
+    logout();
+  };
+
   return (
     <Box
       sx={{
@@ -141,9 +149,18 @@ export function Chat() {
         }}
       >
         <Typography variant="h6">Strapi Chat</Typography>
-        <Typography variant="caption">
-          {isConnected ? 'Connected' : 'Connecting...'}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="caption">
+            {isConnected ? 'Connected' : 'Connecting...'}
+          </Typography>
+          <IconButton 
+            color="inherit" 
+            onClick={handleLogout}
+            sx={{ ml: 1 }}
+          >
+            <LogoutIcon />
+          </IconButton>
+        </Box>
       </Box>
 
       {/* Messages Section */}

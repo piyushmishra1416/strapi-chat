@@ -1,5 +1,6 @@
 import { Chat } from './components/Chat';
 import { Login } from './components/Login';
+import { Signup } from './components/Signup';
 import { ThemeProvider, createTheme } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
@@ -11,9 +12,13 @@ const theme = createTheme({
 });
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, showLogin } = useAuth();
 
-  return isAuthenticated ? <Chat /> : <Login />;
+  if (isAuthenticated) {
+    return <Chat />;
+  }
+
+  return showLogin ? <Login /> : <Signup />;
 }
 
 function App() {

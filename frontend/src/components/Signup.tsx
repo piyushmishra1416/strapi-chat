@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { Box, TextField, Button, Typography, Paper, Link } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 
-export function Login() {
-  const [identifier, setIdentifier] = useState('');
+export function Signup() {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, setShowLogin } = useAuth();
+  const { signup, setShowLogin } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(identifier, password);
+      await signup(username, email, password);
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Login failed. Please check your credentials.');
+      setError(err.response?.data?.error?.message || 'Signup failed. Please try again.');
     }
   };
 
@@ -29,15 +30,24 @@ export function Login() {
     >
       <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: '100%' }}>
         <Typography variant="h5" gutterBottom>
-          Login
+          Sign Up
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth
             margin="normal"
-            label="Email or Username"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <TextField
@@ -60,17 +70,17 @@ export function Login() {
             variant="contained"
             sx={{ mt: 3 }}
           >
-            Login
+            Sign Up
           </Button>
           <Box sx={{ mt: 2, textAlign: 'center' }}>
             <Typography variant="body2">
-              Don't have an account?{' '}
+              Already have an account?{' '}
               <Link
                 component="button"
                 variant="body2"
-                onClick={() => setShowLogin(false)}
+                onClick={() => setShowLogin(true)}
               >
-                Sign Up
+                Login
               </Link>
             </Typography>
           </Box>
